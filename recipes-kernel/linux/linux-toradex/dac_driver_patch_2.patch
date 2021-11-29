@@ -1,0 +1,14 @@
+diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
+index 7a5c329172ec..d9814901bedf 100644
+--- a/drivers/iio/dac/ti-dac5571.c
++++ b/drivers/iio/dac/ti-dac5571.c
+@@ -409,6 +409,7 @@ MODULE_DEVICE_TABLE(of, dac5571_of_id);
+ #endif
+ 
+ static const struct i2c_device_id dac5571_id[] = {
++	{"dac081c081", single_8bit},
+ 	{"dac5571", single_8bit},
+ 	{"dac6571", single_10bit},
+ 	{"dac7571", single_12bit},
+-- 
+2.17.1
