@@ -1,5 +1,5 @@
 diff --git a/drivers/media/platform/imx8/ar0521.c b/drivers/media/platform/imx8/ar0521.c
-index ad0b1b973a7f..6bb0ad01db97 100644
+index 7ca2d5529b5e..9292e221db43 100644
 --- a/drivers/media/platform/imx8/ar0521.c
 +++ b/drivers/media/platform/imx8/ar0521.c
 @@ -41,7 +41,7 @@ static int pwdn_gpio, reset_gpio;
@@ -7,45 +7,53 @@ index ad0b1b973a7f..6bb0ad01db97 100644
  int gpios_available(void)
  {
 -	return (pwdn_gpio >= 0) && (reset_gpio >= 0);
-+	return true;
++	return 1;
  }
  
  /**********************************************************************
-@@ -3426,8 +3426,35 @@ static int ar0521_probe(struct i2c_client *client,
- 	 * seem to be needed here as the Variscite EVK seems to be supplying
- 	 * the required voltage directly without us needing to set it.
- 	 */
--	toggle_gpio(reset_gpio, 1);
--	msleep(500);
-+
-+	int retval;
-+	struct gpio_desc *csenable;
-+
-+	csenable = devm_gpiod_get_optional(dev, "csenable", GPIOD_OUT_HIGH);
-+	if (IS_ERR(csenable)) {
-+		retval = PTR_ERR(csenable);
-+		dev_err(dev, "%s(): CANT FIND GPIO!\n", __func__);
-+	} else {
-+		dev_err(dev, "%s(): CSEnable pin OK!\n", __func__);
-+	}
-+
-+	if (csenable) {
-+		dev_err(dev, "%s(): CSEnable high!\n", __func__);
-+		gpiod_set_value(csenable, 1);
-+	} else {
-+		dev_err(dev, "%s(): ERROR CSEnable!\n", __func__);
-+	}
-+
-+	dev_info(dev, "Waiting for csi enable to stabilize!\n");
-+
-+	msleep(2000);
-+
-+	dev_info(dev, "Proceeding!!\n");
-+
-+	if (gpios_available()) {
-+		toggle_gpio(reset_gpio, 1);
-+		msleep(500);
-+	}
+@@ -3368,6 +3368,17 @@ static int ar0521_parse_and_get_gpios(struct device *dev)
+ 		return err;
+ 	}
  
++	dev_info(dev, "setting GPIOS!!");
++
++	gpio_set_value(pwdn_gpio, 0);
++	gpio_set_value(reset_gpio, 1);
++
++	int power_down_value = gpio_get_value(pwdn_gpio);
++	int reset_value = gpio_get_value(reset_gpio);
++
++	dev_info(dev, "current value of power down: %d", power_down_value);
++	dev_info(dev, "current value of reset: %d", reset_value);
++
+ 	return 0;
+ }
+ 
+@@ -3418,6 +3429,14 @@ static int ar0521_probe(struct i2c_client *client,
+ 	toggle_gpio(reset_gpio, 1);
+ 	msleep(500);
+ 
++	ar0521_data.vref = devm_regulator_get(dev, "vref");
++	if (IS_ERR(ar0521_data.vref))
++		return PTR_ERR(ar0521_data.vref);
++
++	ret = regulator_enable(ar0521_data.vref);
++	if (ret < 0)
++		return ret;
++
  	ret = ar0521_verify_mcu(client);
  	if (ret) {
+ 		dev_err(dev, "Error occurred when verifying MCU\n");
+diff --git a/drivers/media/platform/imx8/ar0521.h b/drivers/media/platform/imx8/ar0521.h
+index 05bdb30bbb4f..db3a1f401771 100644
+--- a/drivers/media/platform/imx8/ar0521.h
++++ b/drivers/media/platform/imx8/ar0521.h
+@@ -244,6 +244,8 @@ struct ar0521 {
+ 	uint16_t mipi_lane_config;
+ 	uint16_t mipi_clk_config;
+ 
++	struct regulator *vref;
++
+ 	struct v4l2_ctrl *ctrls[];
+ 	
+ };
