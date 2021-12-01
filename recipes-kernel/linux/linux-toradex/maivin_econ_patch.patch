@@ -1,8 +1,16 @@
 diff --git a/drivers/media/platform/imx8/ar0521.c b/drivers/media/platform/imx8/ar0521.c
-index 7ca2d5529b5e..9292e221db43 100644
+index f8ad8ff49901..9292e221db43 100644
 --- a/drivers/media/platform/imx8/ar0521.c
 +++ b/drivers/media/platform/imx8/ar0521.c
-@@ -41,7 +41,7 @@ static int pwdn_gpio, reset_gpio;
+@@ -23,6 +23,7 @@
+ #include <linux/pinctrl/consumer.h>
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-ctrls.h>
++#include <linux/regulator/consumer.h>
+ #include "ar0521.h"
+ #include "mcu_firmware.h"
+ 
+@@ -40,7 +41,7 @@ static int pwdn_gpio, reset_gpio;
  
  int gpios_available(void)
  {
