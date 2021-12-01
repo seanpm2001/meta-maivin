@@ -1,14 +1,14 @@
 diff --git a/drivers/media/platform/imx8/ar0521.c b/drivers/media/platform/imx8/ar0521.c
-index f8ad8ff49901..9292e221db43 100644
+index 7361b37005c0..9dc85fb8d4e9 100644
 --- a/drivers/media/platform/imx8/ar0521.c
 +++ b/drivers/media/platform/imx8/ar0521.c
-@@ -23,6 +23,7 @@
+@@ -21,6 +21,7 @@
+ #include <linux/i2c.h>
+ #include <linux/of_gpio.h>
  #include <linux/pinctrl/consumer.h>
++#include <linux/regulator/consumer.h>
  #include <media/v4l2-device.h>
  #include <media/v4l2-ctrls.h>
-+#include <linux/regulator/consumer.h>
- #include "ar0521.h"
- #include "mcu_firmware.h"
  
 @@ -40,7 +41,7 @@ static int pwdn_gpio, reset_gpio;
  
@@ -19,7 +19,7 @@ index f8ad8ff49901..9292e221db43 100644
  }
  
  /**********************************************************************
-@@ -3368,6 +3368,17 @@ static int ar0521_parse_and_get_gpios(struct device *dev)
+@@ -3352,6 +3353,17 @@ static int ar0521_parse_and_get_gpios(struct device *dev)
  		return err;
  	}
  
@@ -37,7 +37,7 @@ index f8ad8ff49901..9292e221db43 100644
  	return 0;
  }
  
-@@ -3418,6 +3429,14 @@ static int ar0521_probe(struct i2c_client *client,
+@@ -3402,6 +3414,14 @@ static int ar0521_probe(struct i2c_client *client,
  	toggle_gpio(reset_gpio, 1);
  	msleep(500);
  
