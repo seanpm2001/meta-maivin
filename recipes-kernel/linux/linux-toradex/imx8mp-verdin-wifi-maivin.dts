@@ -335,3 +335,17 @@
 		};
 	};
 };
+
+///////////////////////For bringing up the NPU//////////////////////////
+
+&gpu_2d {
+	status = "okay";
+};
+
+&gpu_3d {
+	status = "okay";
+};
+
+&mix_gpu_ml {
+	status = "okay";
+};
