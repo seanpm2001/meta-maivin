@@ -349,3 +349,7 @@
 &mix_gpu_ml {
 	status = "okay";
 };
+
+&ml_vipsi {
+	status = "okay";
+};
