@@ -103,18 +103,6 @@
 		compatible = "ti,tmp102", "tmp102";
 		reg = <0x4b>;
 	};
-
-	/* EEPROM on the rear connector interface */
-	eeprom@54 {
-		compatible = "st,24c02";
-		pagesize = <16>;
-		reg = <0x54>;
-	};
-};
-
-/* EEPROM on the carrier board */
-&eeprom_carrier_board {
-	status = "okay";
 };
 
 &iomuxc {
