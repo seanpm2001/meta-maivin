@@ -1,2 +1,2 @@
-SUMMARY = "Maivin Torizon"
+SUMMARY = "Maivin"
 DESCRIPTION = "Maivin Torizon"
