@@ -5,24 +5,24 @@ index 2f3ea43bb789..091b8e2ec5ad 100644
 @@ -26,6 +26,20 @@ config MXC_CAMERA_AR1335
          help
            Enable support for video4linux camera sensor driver for eCAM131_CUIMX8
- 
+
 +config MXC_CAMERA_AR1335_AF
 +        tristate "AR1335 Auto focus Camera driver support"
 +        depends on I2C && VIDEO_ECAM
-+        default y
++        default m
 +        help
 +          Enable support for video4linux camera sensor driver for eCAM136_IMX8
 +
 +config MXC_CAMERA_AR0234
 +        tristate "AR0234 Camera driver support"
 +        depends on I2C && VIDEO_ECAM
-+        default y
++        default m
 +        help
 +          Enable support for video4linux camera sensor driver for eCAM21_CUIMX8
 +
  endmenu
  endif #VIDEO_MX8_CAPTURE
- 
+
 diff --git a/drivers/media/platform/imx8/Makefile b/drivers/media/platform/imx8/Makefile
 index b0226f245299..0cceaf5f53e0 100644
 --- a/drivers/media/platform/imx8/Makefile
@@ -1323,7 +1323,7 @@ index 000000000000..8c69b0e9a4a8
 +			/*
 +			 * We check for UYVY here instead of YUYV as the output from the sensor
 +			 * is UYVY. We swap it to YUYV only making changes in the platform driver.
-+			 */ 
++			 */
 +			case V4L2_PIX_FMT_UYVY:
 +				/* ar0234_codes is already populated with V4L2_PIX_FMT_YUYV */
 +				/* check if width and height are already in array - update frame rate only */
@@ -1826,7 +1826,7 @@ index 000000000000..8c69b0e9a4a8
 +
 +	mc_data_0234[0] = CMD_SIGNATURE;
 +	mc_data_0234[1] = cmd_id;
-+	
++
 +	switch(cmd_id) {
 +		case CMD_ID_LANE_CONFIG:
 +			/*Lane configuration */
@@ -2882,7 +2882,7 @@ index 000000000000..8c69b0e9a4a8
 +
 +static int ar0234_s_power(struct v4l2_subdev *sd, int on)
 +{
-+	
++
 +	/* Perform Power On/Off Sequence - if any  */
 +	return 0;
 +}
@@ -2890,7 +2890,7 @@ index 000000000000..8c69b0e9a4a8
 +static int ar0234_get_fmt(struct v4l2_subdev *sd,struct v4l2_subdev_pad_config *cfg,struct v4l2_subdev_format *format)
 +{
 +	int ret = 0;
-+	
++
 +	if (format->pad)
 +		return -EINVAL;
 +
@@ -2899,7 +2899,7 @@ index 000000000000..8c69b0e9a4a8
 +	format->format.field = V4L2_FIELD_NONE;
 +
 +	format->format.width	= ar0234_data.pix.width;
-+	format->format.height	= ar0234_data.pix.height; 
++	format->format.height	= ar0234_data.pix.height;
 +
 +	return ret;
 +}
@@ -2924,7 +2924,7 @@ index 000000000000..8c69b0e9a4a8
 +			break;
 +		}
 +	}
-+	
++
 +	if(flag == 0) {
 +		format->format.width	= ar0234_data.pix.width;
 +		format->format.height	= ar0234_data.pix.height;
@@ -3091,7 +3091,7 @@ index 000000000000..8c69b0e9a4a8
 +		toggle_gpio(reset_gpio, 1);
 +		msleep(500);
 +
-+		for(try = 0; try < 10; try++) {	
++		for(try = 0; try < 10; try++) {
 +			ret = mcu_get_fw_version(client, fw_version_0234);
 +			if(ret < 0) {
 +				msleep(100);
@@ -3479,7 +3479,7 @@ index 000000000000..8c69b0e9a4a8
 +		return ret;
 +	}
 +	else
-+		pr_info("camera-mipi-clk = %dMHz\n",ar0234_data.mipi_clk_config); 		
++		pr_info("camera-mipi-clk = %dMHz\n",ar0234_data.mipi_clk_config);
 +
 +	//ar0234_data.mipi_clk_config = 896;
 +	ret = mcu_isp_configuration(CMD_ID_MIPI_CLK_CONFIG, client);
@@ -3517,7 +3517,7 @@ index 000000000000..8c69b0e9a4a8
 +		return -EFAULT;
 +	}
 +
-+	
++
 +	if (mcu_get_sensor_id(client, &sensor_id) < 0) {
 +		dev_err(dev, "Unable to get MCU Sensor ID \n");
 +		return -EFAULT;
@@ -3525,14 +3525,14 @@ index 000000000000..8c69b0e9a4a8
 +
 +	retry = 5;
 +	while(--retry >= 0){
-+	
++
 +		if (mcu_isp_init(client) < 0) {
 +			dev_err(dev, "INIT ISP failure. retrying\n");
 +			continue;
 +		} else {
 +		  	break;
 +		}
-+		
++
 +	}
 +	if(retry < 0){
 +		dev_err(dev, "Unable to INIT ISP \n");
@@ -3980,11 +3980,11 @@ index 000000000000..560e6d40ce38
 +	uint16_t mipi_clk_config;
 +
 +	struct v4l2_ctrl *ctrls[];
-+	
++
 +	//struct pwm_device *pwm_dev;
 +	//bool got_pwm_handle;
-+	
-+	
++
++
 +};
 +
 +static ISP_STREAM_INFO *stream_info = NULL;
@@ -4046,12 +4046,12 @@ index c798bc938263..780dcf60e70c 100644
 -		printk("format_resolution width= %d \n",format->format.width);
 -		printk("format_resolution height= %d \n",format->format.height);
  	}
- 	
+
  	if(flag == 0) {
 @@ -3543,6 +3537,16 @@ static int ar1335_probe(struct i2c_client *client,
  		}
  	}
- 
+
 +	struct v4l2_control ctrl = {
 +		.id = 0x009a0901,
 +		.value = 0
@@ -12450,7 +12450,7 @@ index b10abd0d1a04..1cbd4d7d0ba5 100644
 @@ -1204,6 +1204,144 @@ static int mipi_csis_enum_frameintervals(struct v4l2_subdev *mipi_sd,
  	return v4l2_subdev_call(sen_sd, pad, enum_frame_interval, NULL, fie);
  }
- 
+
 +#ifdef CONFIG_VIDEO_ECAM
 +
 +static int mipi_csis_s_parm(struct v4l2_subdev *mipi_sd, struct v4l2_streamparm *a)
@@ -12606,11 +12606,11 @@ index b10abd0d1a04..1cbd4d7d0ba5 100644
 +        .querymenu = mipi_csis_querymenu,
 +#endif
  };
- 
+
  static struct v4l2_subdev_video_ops mipi_csis_video_ops = {
  	.s_rx_buffer = mipi_csis_s_rx_buffer,
  	.s_stream = mipi_csis_s_stream,
- 
+
 +#ifdef CONFIG_VIDEO_ECAM
 +        .s_parm = mipi_csis_s_parm,
 +        .g_parm = mipi_csis_g_parm,
