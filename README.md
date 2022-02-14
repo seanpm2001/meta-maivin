@@ -1,29 +1,6 @@
-# README #
+# Meta Maivin #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This project provides an Yocto layer to deploy the required changes for [
+Maivin - Modular full-stack AI Vision System](https://www.toradex.com/maivin-modular-full-stack-ai-vision-system) - on TorizonCore base image.
 
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+See the [maivin-bsp project](https://github.com/toradex/maivin-bsp) for instructions about building Maivin BSP.
